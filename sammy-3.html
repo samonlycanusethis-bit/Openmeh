@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000500">
+<title>CLASSIFIED</title>
+<style>
+:root{--g:#39ff14;--g2:#00b83f;--bg:#000500}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--g);font-family:"Courier New",monospace;min-height:100vh;padding:18px;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,#39ff1408 4px);z-index:2}
+.terminal{width:min(780px,100%);border:1px solid #16852c;background:rgba(0,8,1,.97);box-shadow:0 0 28px #00ff2a24;padding:clamp(16px,4vw,28px);position:relative}
+.head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #145c23;padding-bottom:12px;font-size:11px;color:#9aff9a}
+h1{font-size:clamp(30px,8vw,58px);line-height:1;margin:25px 0 8px;letter-spacing:3px;text-shadow:0 0 8px var(--g),2px 0 #0a6320;animation:flicker 3s infinite;overflow-wrap:anywhere}
+@keyframes flicker{0%,94%,100%{opacity:1}95%{opacity:.72}96%{opacity:1}98%{opacity:.82}}
+.subtitle{font-size:12px;color:#a5ffb0;line-height:1.8}
+.rule{height:1px;background:#145c23;margin:20px 0}
+.tag{color:#c7ffd0;border:1px solid #1b6d2a;padding:5px 8px;font-size:11px;display:inline-block;margin:3px 4px 3px 0}
+.panel{border:1px solid #17692a;background:#020b03;padding:15px;margin-top:18px}
+.line{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;margin:8px 0}
+.dim{color:#65a873}
+.big{font-size:clamp(32px,8vw,52px);text-align:center;font-weight:bold;letter-spacing:3px;text-shadow:0 0 12px #39ff1480;margin:20px 0 5px}
+.progress{height:13px;border:1px solid #208c35;padding:2px;background:#000}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#08751f,#39ff14);box-shadow:0 0 9px #39ff14;transition:width .08s linear}
+.log{height:112px;overflow:hidden;font-size:12px;line-height:1.65;color:#7eff91;white-space:pre-line;overflow-wrap:anywhere;margin-top:14px}
+button{font-family:inherit;width:100%;padding:14px;margin-top:12px;background:#031d08;color:var(--g);border:1px solid var(--g);font-size:14px;font-weight:bold;letter-spacing:1px;cursor:pointer;box-shadow:0 0 10px #39ff1418}
+button:active{background:#0a3511}
+button:disabled{opacity:.6;cursor:wait}
+.foot{font-size:10px;color:#4f8d5b;line-height:1.6;margin-top:17px}
+.complete{color:#aaffb6;font-weight:bold}
+</style>
+</head>
+<body>
+<main class="terminal">
+  <div class="head"><span>SYS://CLASSIFIED</span><span>TERMINAL BUILD 10.0</span></div>
+  <h1>CLASSIFIED</h1>
+  <div class="subtitle">SECURE CONSOLE // VISUAL SIMULATION<br>SESSION STATUS: <span id="session">IDLE</span></div>
+  <div class="rule"></div>
+  <span class="tag">ENCRYPTED UI</span><span class="tag">SCAN DEMO</span><span class="tag">SIMULATION MODE</span>
+  <section class="panel">
+    <div class="line"><span class="dim">PROCESS</span><span id="status">STANDBY</span></div>
+    <div class="line"><span class="dim">SIMULATED RECORDS</span><span>LOCAL DEMO</span></div>
+    <div class="big"><span id="count">00000</span><span class="dim" style="font-size:15px"> / 10000</span></div>
+    <div class="progress"><div class="fill" id="fill"></div></div>
+    <div class="log" id="log">[SYS] Console initialized.
+[SYS] Waiting for user input...
+[INFO] This page is a visual prank simulation.</div>
+    <button id="start">▶ START SCAN SIMULATION</button>
+  </section>
+  <div class="foot">NOTICE: Simulated terminal animation only. It does not access devices, collect personal information, or transmit data.</div>
+</main>
+<script>
+(() => {
+  const max=10000, count=document.getElementById('count'), fill=document.getElementById('fill'),
+  status=document.getElementById('status'), session=document.getElementById('session'),
+  log=document.getElementById('log'), button=document.getElementById('start');
+  let running=false, timer=null;
+  const lines=[
+    '[SYS] Initializing visual scan sequence...',
+    '[OK] Terminal interface ready.',
+    '[SIM] Generating fictional record index...',
+    '[SIM] Rendering progress data...',
+    '[INFO] No personal information is being accessed.',
+    '[SIM] Completing demonstration sequence...'
+  ];
+  button.addEventListener('click',()=>{
+    if(running)return;
+    running=true;button.disabled=true;button.textContent='SCAN SIMULATION RUNNING...';
+    status.textContent='RUNNING';session.textContent='ACTIVE';
+    let value=0,lastLine=0;
+    count.textContent='00000';fill.style.width='0%';
+    log.textContent=lines[0]+'\n';
+    timer=setInterval(()=>{
+      value=Math.min(max,value+Math.floor(65+Math.random()*145));
+      count.textContent=String(value).padStart(5,'0');
+      fill.style.width=(value/max*100)+'%';
+      const index=Math.min(lines.length-1,Math.floor(value/max*lines.length));
+      if(index>lastLine){lastLine=index;log.textContent+=lines[index]+'\n';}
+      if(value>=max){
+        clearInterval(timer);timer=null;count.textContent='10000';fill.style.width='100%';
+        status.textContent='COMPLETE';session.textContent='FINISHED';
+        log.textContent+='[DONE] SIMULATION COMPLETE.\n[PRANK] GET DOXXED BY SAMMY 💀';
+        log.classList.add('complete');button.disabled=false;button.textContent='↻ RUN AGAIN';running=false;
+      }
+    },70);
+  });
+})();
+</script>
+</body>
+</html>
